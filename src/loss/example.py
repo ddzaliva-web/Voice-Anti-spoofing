@@ -2,9 +2,9 @@ import torch
 from torch import nn
 
 
-class ExampleLoss(nn.Module):
+class LCNNLoss(nn.Module):
     """
-    Example of a loss function to use.
+    LCNN loss function
     """
 
     def __init__(self):

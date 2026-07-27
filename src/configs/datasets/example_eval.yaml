@@ -1,14 +1,8 @@
 val:
-  _target_: src.datasets.ExampleDataset
-  input_length: 1024
-  dataset_length: 15
-  n_classes: 10
-  name: "val"
+  _target_: src.datasets.ASVSpoofDataset
+  name: "dev"
   instance_transforms: ${transforms.instance_transforms.inference}
 test:
   _target_: src.datasets.ExampleDataset
-  input_length: 1024
-  dataset_length: 15
-  n_classes: 10
-  name: "test"
+  name: "eval"
   instance_transforms: ${transforms.instance_transforms.inference}
