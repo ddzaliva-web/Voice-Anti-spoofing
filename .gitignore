@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -113,3 +114,22 @@ outputs/
 .idea/
 __MACOSX/
 .aider*
+=======
+docs/site/
+
+# OSX Junk
+.DS_Store
+
+# test cache
+.cache/*
+tests/__pycache__/*
+*.pytest_cache/
+*.pyc
+
+# other local dev info
+.vscode/
+cookiecutter_data_science.egg-info/
+
+# Pycharm
+.idea
+>>>>>>> ab8121e4652767ba6d89a40e3f57790c09aaca44
