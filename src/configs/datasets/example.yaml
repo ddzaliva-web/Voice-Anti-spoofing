@@ -1,5 +1,4 @@
 train:
-  datasets:
     - _target_: src.datasets.ASVSpoofDataset
       name: "train"
       instance_transforms: ${transforms.instance_transforms.train}
