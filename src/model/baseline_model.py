@@ -62,7 +62,7 @@ class LCNN(nn.Module):
 
     )
 
-    def forward(self, data_object):
+    def forward(self, data_object, **kwargs):
        spec = self.stft(data_object).abs() #берем магнитуду
        spec = torch.log(spec.clamp(min=1e-9))
        spec = spec.unsqueeze(1) #conv2d ожидает (batch,1(channels),freq,time)
