@@ -62,4 +62,4 @@ class  ASVSpoofDataset(BaseDataset):
     def load_object(self,path):
             audio,sr = torchaudio.load(path)
             audio = audio.squeeze(0)
-            return 
+            return audio
