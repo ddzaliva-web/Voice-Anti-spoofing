@@ -1,8 +1,10 @@
 import torch
 from tqdm.auto import tqdm
+from pathlib import Path
 from src.datasets.base_dataset import BaseDataset
 from src.utils.io_utils import ROOT_PATH, read_json, write_json
 import torchaudio
+DATA_ROOT = Path("/kaggle/input/datasets/awsaf49/asvpoof-2019-dataset/LA")
 #torchaudio.set_audio_backend("sox_io")
 torchaudio.set_audio_backend("soundfile")
 
@@ -38,7 +40,7 @@ class  ASVSpoofDataset(BaseDataset):
                 such as label and object path.
         """
         index = []
-        data_path = ROOT_PATH / "data" / "LA" /"ASVspoof2019_LA_cm_protocols" / protocol_files[name]
+        data_path = DATA_ROOT / "ASVspoof2019_LA_cm_protocols" / protocol_files[name]
         # to get pretty object names
         # In this example, we create a synthesized dataset. However, in real
         # tasks, you should process dataset metadata and append it
@@ -53,7 +55,7 @@ class  ASVSpoofDataset(BaseDataset):
                     label = 1
                 else:
                     label = 0
-                audio_path = ROOT_PATH / "data" / "LA" /f"ASVspoof2019_LA_{name}"/"flac"/f"{audio_name}.flac"
+                audio_path = DATA_ROOT / f"ASVspoof2019_LA_{name}" / "flac" / f"{audio_name}.flac"
                 index.append({"path": str(audio_path), "label": label})
 
         return index
