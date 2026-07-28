@@ -4,7 +4,7 @@ from pathlib import Path
 from src.datasets.base_dataset import BaseDataset
 from src.utils.io_utils import ROOT_PATH, read_json, write_json
 import torchaudio
-DATA_ROOT = Path("/kaggle/input/datasets/awsaf49/asvpoof-2019-dataset/LA")
+DATA_ROOT = Path("/kaggle/input/datasets/awsaf49/asvpoof-2019-dataset/LA/LA")
 #torchaudio.set_audio_backend("sox_io")
 torchaudio.set_audio_backend("soundfile")
 
