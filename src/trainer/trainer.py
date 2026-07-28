@@ -37,7 +37,7 @@ class Trainer(BaseTrainer):
         outputs = self.model(**batch)
         batch.update(outputs)
 
-        all_losses = self.criterion(**batch)
+        all_losses = self.criterion(batch['logits'], batch['labels'])
         batch.update(all_losses)
 
         if self.is_train:
