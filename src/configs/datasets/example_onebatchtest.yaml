@@ -1,9 +1,9 @@
 train:
   _target_: src.datasets.ASVSpoofDataset
   name: "train"
-  limit: 10
+  #limit: 10
 val:
   _target_: src.datasets.ASVSpoofDataset
   name: "train"
-  limit: 10
+  #limit: 10
 
