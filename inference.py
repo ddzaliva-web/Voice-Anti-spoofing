@@ -17,7 +17,7 @@ def main(config):
     """
     Main script for inference. Instantiates the model, metrics, and
     dataloaders. Runs Inferencer to calculate metrics and (or)
-    save predictions.
+    save pråedictions.
 
     Args:
         config (DictConfig): hydra experiment config.
