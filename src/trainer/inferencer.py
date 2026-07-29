@@ -197,7 +197,10 @@ class Inferencer(BaseTrainer):
                     bonafide_scores.append(score)
                 else:
                     spoof_scores.append(score)
+        bonafide_scores = np.array(bonafide_scores)
+        spoof_scores = np.array(spoof_scores)
         eer,threshold = compute_eer(bonafide_scores,spoof_scores)
         logs = self.evaluation_metrics.result()
         logs["eer"] = eer*100
+        print("EER:", eer * 100)
         return logs
