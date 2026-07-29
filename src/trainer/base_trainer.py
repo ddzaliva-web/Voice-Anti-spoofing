@@ -1,10 +1,10 @@
 from abc import abstractmethod
-
+import numpy as np
 import torch
 from numpy import inf
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
-
+from src.metrics.eer import compute_eer
 from src.datasets.data_utils import inf_loop
 from src.metrics.tracker import MetricTracker
 from src.utils.io_utils import ROOT_PATH
@@ -263,6 +263,8 @@ class BaseTrainer:
         self.is_train = False
         self.model.eval()
         self.evaluation_metrics.reset()
+        all_scores = []
+        all_labels = []
         with torch.no_grad():
             for batch_idx, batch in tqdm(
                 enumerate(dataloader),
@@ -273,13 +275,31 @@ class BaseTrainer:
                     batch,
                     metrics=self.evaluation_metrics,
                 )
-            self.writer.set_step(epoch * self.epoch_len, part)
-            self._log_scalars(self.evaluation_metrics)
-            self._log_batch(
-                batch_idx, batch, part
+                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность подделки([:,1])
+                all_scores.extend(scores.cpu().numpy()) #превращает тенсор pytorch в в список,так мы накапливаем score для всех батчей
+                all_labels.extend(batch["labels"].cpu().numpy())
+        all_scores = np.array(all_scores)
+        all_labels = np.array(all_labels)
+        bonafide_scores = []
+        spoof_scores = []
+        for score, label in zip(all_scores, all_labels):
+            if label == 1:
+                bonafide_scores.append(score)
+            else:
+                spoof_scores.append(score)
+        bonafide_scores = np.array(bonafide_scores)
+        spoof_scores = np.array(spoof_scores)
+        eer,threshold = compute_eer(bonafide_scores,spoof_scores)
+        logs = self.evaluation_metrics.result()
+        logs["eer"] = eer * 100
+        self.logger.info(f"{part} EER: {eer*100:.3f}")
+        self.writer.set_step(epoch * self.epoch_len, part)
+        self.writer.add_scalar("eval_eer", eer * 100)
+        self._log_scalars(self.evaluation_metrics)
+        self._log_batch(
+            batch_idx, batch, part
             )  # log only the last batch during inference
-
-        return self.evaluation_metrics.result()
+        return logs
 
     def _monitor_performance(self, logs, not_improved_count):
         """
