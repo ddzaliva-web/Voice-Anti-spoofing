@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import numpy as np
 import torch
+import wandb
 from numpy import inf
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
@@ -292,6 +293,7 @@ class BaseTrainer:
         eer,threshold = compute_eer(bonafide_scores,spoof_scores)
         logs = self.evaluation_metrics.result()
         logs["eer"] = eer * 100
+        wandb.log({f"{part}_eer": eer * 100}, step=epoch * self.epoch_len)
         self.logger.info(f"{part} EER: {eer*100:.3f}")
         self.writer.set_step(epoch * self.epoch_len, part)
         self.writer.add_scalar("eval_eer", eer * 100)
