@@ -192,11 +192,8 @@ class Inferencer(BaseTrainer):
         all_labels = np.array(all_labels)
         bonafide_scores = []
         spoof_scores = []
-        for score, label in zip(all_scores, all_labels):
-                if label == 1:
-                    bonafide_scores.append(score)
-                else:
-                    spoof_scores.append(score)
+        bonafide_scores = all_scores[all_labels == 1]
+        spoof_scores = all_scores[all_labels == 0]
         bonafide_scores = np.array(bonafide_scores)
         spoof_scores = np.array(spoof_scores)
         eer,threshold = compute_eer(bonafide_scores,spoof_scores)

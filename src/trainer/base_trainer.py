@@ -283,20 +283,16 @@ class BaseTrainer:
         all_labels = np.array(all_labels)
         bonafide_scores = []
         spoof_scores = []
-        for score, label in zip(all_scores, all_labels):
-            if label == 1:
-                bonafide_scores.append(score)
-            else:
-                spoof_scores.append(score)
+        bonafide_scores = all_scores[all_labels == 1]
+        spoof_scores = all_scores[all_labels == 0]
         bonafide_scores = np.array(bonafide_scores)
         spoof_scores = np.array(spoof_scores)
         eer,threshold = compute_eer(bonafide_scores,spoof_scores)
         logs = self.evaluation_metrics.result()
         logs["eer"] = eer * 100
-        wandb.log({f"{part}_eer": eer * 100}, step=epoch * self.epoch_len)
         self.logger.info(f"{part} EER: {eer*100:.3f}")
         self.writer.set_step(epoch * self.epoch_len, part)
-        self.writer.add_scalar("eval_eer", eer * 100)
+        self.writer.add_scalar(f"{part}_eer", eer * 100)
         self._log_scalars(self.evaluation_metrics)
         self._log_batch(
             batch_idx, batch, part
