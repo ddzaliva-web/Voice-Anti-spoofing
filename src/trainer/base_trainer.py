@@ -266,8 +266,9 @@ class BaseTrainer:
         self.is_train = False
         self.model.eval()
         self.evaluation_metrics.reset()
-        all_scores = []
+        all_probs = []
         all_labels = []
+
         with torch.no_grad():
             for batch_idx, batch in tqdm(
                 enumerate(dataloader),
@@ -278,27 +279,33 @@ class BaseTrainer:
                     batch,
                     metrics=self.evaluation_metrics,
                 )
-                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность оригинала([:,1])
-                all_scores.extend(scores.cpu().numpy()) #превращает тенсор pytorch в в список,так мы накапливаем score для всех батчей
-                all_labels.extend(batch["labels"].cpu().numpy())
-        all_scores = np.array(all_scores)
-        all_labels = np.array(all_labels)
-        bonafide_scores = []
-        spoof_scores = []
-        bonafide_scores = all_scores[all_labels == 1]
-        spoof_scores = all_scores[all_labels == 0]
-        bonafide_scores = np.array(bonafide_scores)
-        spoof_scores = np.array(spoof_scores)
-        eer,threshold = compute_eer(bonafide_scores,spoof_scores)
+                probs = torch.softmax(batch["logits"], dim=1)  # shape [B, C]
+                all_probs.append(probs.cpu().numpy())
+                all_labels.append(batch["labels"].cpu().numpy())
+
+        # собираем в единые массивы
+        all_probs = np.vstack(all_probs)
+        all_labels = np.concatenate(all_labels)
+        unique, counts = np.unique(all_labels, return_counts=True)
+        self.logger.info(f"{part} label distribution in evaluation: {dict(zip(unique.tolist(), counts.tolist()))}")
+        if np.any(all_labels == 1):
+            mean_probs_on_bonafide = all_probs[all_labels == 1].mean(axis=0)
+            idx_bonafide = int(np.nanargmax(mean_probs_on_bonafide))
+        else:
+            idx_bonafide = 1 if all_probs.shape[1] > 1 else 0
+        scores = all_probs[:, idx_bonafide]
+        bonafide_scores = scores[all_labels == 1]
+        spoof_scores = scores[all_labels == 0]
+        eer, threshold = compute_eer(bonafide_scores, spoof_scores)
         logs = self.evaluation_metrics.result()
         logs["eer"] = eer * 100
-        self.logger.info(f"{part} EER: {eer*100:.3f}")
+        self.logger.info(f"{part} EER: {eer*100:.3f} (idx_bonafide={idx_bonafide})")
         self.writer.set_step(epoch * self.epoch_len, part)
         self.writer.add_scalar(f"{part}_eer", eer * 100)
         self._log_scalars(self.evaluation_metrics)
         self._log_batch(
             batch_idx, batch, part
-            )  # log only the last batch during inference
+        )  # log only the last batch during inference
         return logs
 
     def _monitor_performance(self, logs, not_improved_count):
