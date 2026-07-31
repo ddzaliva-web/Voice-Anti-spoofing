@@ -54,7 +54,7 @@ class LCNN(nn.Module):
             nn.Flatten(),
             nn.Linear(128 * 8 * 8, 512),
             MFM(),
-            nn.Dropout(0.6), #регуляризация которая выключает 60% нейронов дабы не переобучаться
+            nn.Dropout(0.5), #регуляризация которая выключает 50% нейронов дабы не переобучаться
             nn.BatchNorm1d(256), #нормализует выходные нейроны, делая равномерное распределение (для ускорения обучения)
             #этот вектор 256 описывает аудио для задачи подделка или оригинал
             nn.Linear(256,2), #превращает вектор размера 512 в 2 числа(0,1)
@@ -64,7 +64,7 @@ class LCNN(nn.Module):
 
     def forward(self, data_object, **kwargs):
        spec = self.stft(data_object).abs() #берем магнитуду
-       spec = torch.log(spec.clamp(min=1e-9))
+       spec = torch.log1p(spec.abs())
        spec = spec.unsqueeze(1) #conv2d ожидает (batch,1(channels),freq,time)
 
        return {"logits" : self.net(spec)}

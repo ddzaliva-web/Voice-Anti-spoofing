@@ -278,7 +278,7 @@ class BaseTrainer:
                     batch,
                     metrics=self.evaluation_metrics,
                 )
-                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность подделки([:,1])
+                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность оригинала([:,1])
                 all_scores.extend(scores.cpu().numpy()) #превращает тенсор pytorch в в список,так мы накапливаем score для всех батчей
                 all_labels.extend(batch["labels"].cpu().numpy())
         all_scores = np.array(all_scores)
