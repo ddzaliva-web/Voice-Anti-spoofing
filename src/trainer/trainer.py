@@ -37,9 +37,8 @@ class Trainer(BaseTrainer):
         outputs = self.model(**batch)
         batch.update(outputs)
 
-        loss = self.criterion(batch['logits'], batch['labels'])
-        all_losses = {"loss": loss}
-        batch.update(all_losses)
+        loss_dict = self.criterion(batch['logits'], batch['labels'])
+        batch.update(loss_dict)
 
         if self.is_train:
             batch["loss"].backward()  # sum of all losses is always called loss
