@@ -8,11 +8,13 @@ defaults:
   - _self_
 optimizer:
   _target_: torch.optim.Adam
-  lr: 1e-7
+  lr: 5e-5
+  weight_decay: 0.001
 lr_scheduler:
   _target_: torch.optim.lr_scheduler.StepLR
   gamma: 0.9
   step_size: 1
+  min_lr: 1e-7
 loss_function:
   _target_: src.loss.example.LCNNLoss
   margin_bona: 0.5
@@ -20,7 +22,7 @@ loss_function:
   scale: 3.0
 trainer:
   log_step: 50
-  n_epochs: 15
+  n_epochs: 10
   epoch_len: null
   device_tensors: ["data_object", "labels"] # which tensors should be on device (ex. GPU)
   resume_from: null # null or path to the checkpoint dir with *.pth and config.yaml
@@ -28,6 +30,6 @@ trainer:
   override: True # if True, will override the previous run with the same name
   monitor: "min val_eer" # "off" or "max/min metric_name", i.e. our goal is to maximize/minimize metric
   save_period: 1 # checkpoint each save_period epochs in addition to the best epoch
-  early_stop: 3 # epochs for early stopping
+  early_stop: 5 # epochs for early stopping
   save_dir: "saved"
   seed: 1
