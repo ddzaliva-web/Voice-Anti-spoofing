@@ -278,30 +278,15 @@ class BaseTrainer:
                     batch,
                     metrics=self.evaluation_metrics,
                 )
-                probs = torch.softmax(batch["logits"], dim=1)
-                print("=" * 60)
-                print("LABELS:")
-                print(batch["labels"][:10].cpu().numpy())
-
-                print("SOFTMAX:")
-                print(probs[:10].cpu().numpy())
-
-                print("PRED:")
-                print(torch.argmax(probs, dim=1)[:10].cpu().numpy())
-                print("=" * 60)
-                break
-                
-
-
-                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность оригинала([:,1])
+                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность подделки([:,1])
                 all_scores.extend(scores.cpu().numpy()) #превращает тенсор pytorch в в список,так мы накапливаем score для всех батчей
                 all_labels.extend(batch["labels"].cpu().numpy())
         all_scores = np.array(all_scores)
         all_labels = np.array(all_labels)
         bonafide_scores = []
         spoof_scores = []
-        bonafide_scores = all_scores[all_labels == 1]
-        spoof_scores = all_scores[all_labels == 0]
+        bonafide_scores = all_scores[all_labels == 0]
+        spoof_scores = all_scores[all_labels == 1]
         bonafide_scores = np.array(bonafide_scores)
         spoof_scores = np.array(spoof_scores)
         eer,threshold = compute_eer(bonafide_scores,spoof_scores)

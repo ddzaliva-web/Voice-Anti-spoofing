@@ -6,7 +6,7 @@ val:
   _target_: src.datasets.ASVSpoofDataset
   name: "dev"
   instance_transforms: ${transforms.instance_transforms.inference}
-test:
-  _target_: src.datasets.ASVSpoofDataset
-  name: "eval"
-  instance_transforms: ${transforms.instance_transforms.inference}
+#test:
+#_target_: src.datasets.ASVSpoofDataset
+#name: "eval"
+#instance_transforms: ${transforms.instance_transforms.inference}
