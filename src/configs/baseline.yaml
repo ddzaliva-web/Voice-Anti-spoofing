@@ -14,10 +14,13 @@ lr_scheduler:
   gamma: 0.9
   step_size: 1
 loss_function:
-  _target_: torch.nn.CrossEntropyLoss
+  _target_: src.loss.example.LCNNLoss
+  margin_bona: 0.2
+  margin_spoof: 0.5
+  scale: 30.0
 trainer:
   log_step: 50
-  n_epochs: 20
+  n_epochs: 15
   epoch_len: null
   device_tensors: ["data_object", "labels"] # which tensors should be on device (ex. GPU)
   resume_from: null # null or path to the checkpoint dir with *.pth and config.yaml

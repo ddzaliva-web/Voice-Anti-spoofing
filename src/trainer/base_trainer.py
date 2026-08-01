@@ -285,8 +285,8 @@ class BaseTrainer:
         all_labels = np.array(all_labels)
         bonafide_scores = []
         spoof_scores = []
-        bonafide_scores = all_scores[all_labels == 0]
-        spoof_scores = all_scores[all_labels == 1]
+        bonafide_scores = all_scores[all_labels == 1]
+        spoof_scores = all_scores[all_labels == 0]
         bonafide_scores = np.array(bonafide_scores)
         spoof_scores = np.array(spoof_scores)
         eer,threshold = compute_eer(bonafide_scores,spoof_scores)

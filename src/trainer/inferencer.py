@@ -1,5 +1,7 @@
 import torch
 from tqdm.auto import tqdm
+import pandas as pd
+from pathlib import Path
 from src.metrics.eer import compute_eer
 from src.metrics.tracker import MetricTracker
 from src.trainer.base_trainer import BaseTrainer
@@ -185,19 +187,23 @@ class Inferencer(BaseTrainer):
                     part=part,
                     metrics=self.evaluation_metrics,
                 )
-                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность подделки([:,1])
+                scores = torch.softmax(batch["logits"], dim = 1)[:,1] #преобразует выход модели (0 или 1) в вероятности оригинал и подделки,модель берет вероятность оригинала([:,1])
                 all_scores.extend(scores.cpu().numpy()) #превращает тенсор pytorch в в список,так мы накапливаем score для всех батчей
                 all_labels.extend(batch["labels"].cpu().numpy())
         all_scores = np.array(all_scores)
         all_labels = np.array(all_labels)
         bonafide_scores = []
         spoof_scores = []
-        bonafide_scores = all_scores[all_labels == 0]
-        spoof_scores = all_scores[all_labels == 1]
+        bonafide_scores = all_scores[all_labels == 1]
+        spoof_scores = all_scores[all_labels == 0]
         bonafide_scores = np.array(bonafide_scores)
         spoof_scores = np.array(spoof_scores)
         eer,threshold = compute_eer(bonafide_scores,spoof_scores)
         logs = self.evaluation_metrics.result()
         logs["eer"] = eer*100
         print("EER:", eer * 100)
+        dataset = self.evaluation_dataloaders[part].dataset
+        keys = [Path(dataset._index[i]["path"]).stem for i in range(len(dataset))]
+        df = pd.DataFrame({"key": keys, "score": all_scores})
+        df.to_csv(self.save_path / "dadezaliva@edu.hse.ru.csv", index=False, header=False)
         return logs

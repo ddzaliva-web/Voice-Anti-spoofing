@@ -50,11 +50,11 @@ class  ASVSpoofDataset(BaseDataset):
             for line in f:
                 audio_line = line.strip().split()
                 audio_name = audio_line[1]
-                label = audio_line[-1]
+                label = audio_line[2]
                 if label == 'bonafide':
-                    label = 0
-                else:
                     label = 1
+                else:
+                    label = 0
                 audio_path = DATA_ROOT / f"ASVspoof2019_LA_{name}" / "flac" / f"{audio_name}.flac"
                 index.append({"path": str(audio_path), "label": label})
 
