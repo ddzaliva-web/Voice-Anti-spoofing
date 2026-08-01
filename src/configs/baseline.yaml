@@ -8,16 +8,16 @@ defaults:
   - _self_
 optimizer:
   _target_: torch.optim.Adam
-  lr: 1e-4
+  lr: 1e-7
 lr_scheduler:
   _target_: torch.optim.lr_scheduler.StepLR
   gamma: 0.9
   step_size: 1
 loss_function:
   _target_: src.loss.example.LCNNLoss
-  margin_bona: 0.2
-  margin_spoof: 0.5
-  scale: 5.0
+  margin_bona: 0.5
+  margin_spoof: 0.7
+  scale: 3.0
 trainer:
   log_step: 50
   n_epochs: 15
