@@ -17,7 +17,7 @@ loss_function:
   _target_: src.loss.example.LCNNLoss
   margin_bona: 0.2
   margin_spoof: 0.5
-  scale: 30.0
+  scale: 10.0
 trainer:
   log_step: 50
   n_epochs: 15

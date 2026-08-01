@@ -32,6 +32,8 @@ def compute_det_curve(target_scores, nontarget_scores):
 
 
 def compute_eer(bonafide_scores, other_scores):
+    if len(bonafide_scores) == 0 or len(other_scores) == 0:
+        return 100.0, 0.0   
     """ 
     Returns equal error rate (EER) and the corresponding threshold.
     """
