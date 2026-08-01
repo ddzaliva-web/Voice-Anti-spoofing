@@ -50,7 +50,7 @@ class  ASVSpoofDataset(BaseDataset):
             for line in f:
                 audio_line = line.strip().split()
                 audio_name = audio_line[1]
-                label = audio_line[4]
+                label = audio_line[-1]
                 if label == 'bonafide':
                     label = 1
                 else:
